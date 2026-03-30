@@ -38,6 +38,7 @@ h1 .y{color:#FFED00}
 .slist{list-style:none;display:flex;flex-direction:column;gap:11px;max-width:580px}
 .slist li{display:flex;align-items:flex-start;gap:14px;font-size:16px;color:#bbb;line-height:1.55}
 .slist li::before{content:'—';color:#FFED00;font-family:'Space Mono',monospace;flex-shrink:0}
+.slist li > *{flex:1;min-width:0}
 .twocol{display:grid;grid-template-columns:1fr 1fr;gap:40px;max-width:700px}
 .colhead{font-family:'Space Mono',monospace;font-size:10px;color:#FFED00;letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px}
 .cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;max-width:780px;background:#1a1a1a;border:1px solid #1a1a1a}
