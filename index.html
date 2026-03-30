@@ -25,7 +25,7 @@ html,body{width:100%;height:100%;background:#0a0a0a;font-family:'Space Grotesk',
 .pip:hover{color:#666;background:#141414}
 .pip.active{color:#FFED00;border-left-color:#FFED00;background:#141414}
 .viewport{flex:1;position:relative;overflow:hidden}
-.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s ease;overflow-y:auto;padding:52px 72px}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s ease;overflow-y:auto;padding:64px 92px}
 .slide.active{opacity:1;pointer-events:all}
 .imgbg{position:absolute;inset:0;opacity:.18;z-index:0;pointer-events:none}
 .content{position:relative;z-index:1;display:flex;flex-direction:column}
@@ -181,7 +181,7 @@ h1 .y{color:#FFED00}
           <ul class="slist">
             <li>Social media is saturated — posts, feeds, short loops on repeat</li>
             <li>Interaction is shallow. Communities are fragmented.</li>
-            <li>The algorithm optimises for engagement, not presence</li>
+            <li>The algorithm optimizes for engagement, not presence</li>
             <li>There is no shared time. No ambient togetherness.</li>
           </ul>
         </div>
@@ -367,7 +367,7 @@ h1 .y{color:#FFED00}
       </div>
 
       <div class="slide">
-        <canvas id="staticCanvas" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:0.18;pointer-events:none;"></canvas>
+        <canvas id="staticCanvas" style="position:absolute;top:0;left:0;width:100%;z-index:0;opacity:0.18;pointer-events:none;"></canvas>
         <div class="phosphor-bg"></div>
         
         <div class="content">
@@ -420,6 +420,7 @@ window.addEventListener("DOMContentLoaded", function() {
     slides[cur].classList.remove("active");
     nav.children[cur].classList.remove("active");
     cur = idx;
+    slides[cur].scrollTop = 0;
     slides[cur].classList.add("active");
     nav.children[cur].classList.add("active");
     nav.children[cur].scrollIntoView({block: "nearest"});
@@ -447,7 +448,17 @@ window.addEventListener("DOMContentLoaded", function() {
     }, { passive: true });
     document.addEventListener("touchend", function(e) {
       var dy = startY - e.changedTouches[0].clientY;
-      if (Math.abs(dy) > 40) window.go(dy > 0 ? 1 : -1);
+      if (Math.abs(dy) < 40) return;
+      var activeSlide = slides[cur];
+      if (dy > 0) {
+        // swipe up → next slide, only if already scrolled to the bottom
+        var atBottom = activeSlide.scrollTop + activeSlide.clientHeight >= activeSlide.scrollHeight - 5;
+        if (atBottom) window.go(1);
+      } else {
+        // swipe down → prev slide, only if already at the top
+        var atTop = activeSlide.scrollTop <= 5;
+        if (atTop) window.go(-1);
+      }
     }, { passive: true });
   })();
 
@@ -474,8 +485,10 @@ window.addEventListener("DOMContentLoaded", function() {
   var raf;
 
   function resize() {
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
+    var slide = canvas.parentElement;
+    canvas.width = slide.clientWidth;
+    canvas.height = slide.scrollHeight;
+    canvas.style.height = slide.scrollHeight + 'px';
   }
 
   function drawStatic() {
